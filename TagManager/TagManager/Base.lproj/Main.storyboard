@@ -1,25 +1,57 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6211" systemVersion="14A298i" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9059" systemVersion="14F1021" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="BYZ-38-t0r">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6204"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9049"/>
     </dependencies>
     <scenes>
         <!--View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="ViewController" customModuleProvider="" sceneMemberID="viewController">
+                <viewController id="BYZ-38-t0r" customClass="ViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9a1-9m-zaN" userLabel="editTagView" customClass="FXTagView">
+                                <rect key="frame" x="0.0" y="28" width="375" height="100"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="100" id="dck-9w-x87"/>
+                                </constraints>
+                            </view>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rMy-N5-Wop" userLabel="selectedTagView" customClass="FXTagView">
+                                <rect key="frame" x="0.0" y="148" width="375" height="200"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="200" id="OCM-z5-rAq"/>
+                                </constraints>
+                            </view>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="rMy-N5-Wop" secondAttribute="trailing" id="8S1-zc-jeY"/>
+                            <constraint firstItem="rMy-N5-Wop" firstAttribute="top" secondItem="9a1-9m-zaN" secondAttribute="bottom" constant="20" id="NFL-CI-jbH"/>
+                            <constraint firstItem="rMy-N5-Wop" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="bEP-80-i0R"/>
+                            <constraint firstItem="9a1-9m-zaN" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="eRK-Y9-9qq"/>
+                            <constraint firstAttribute="trailing" secondItem="9a1-9m-zaN" secondAttribute="trailing" id="sv1-vr-ySh"/>
+                            <constraint firstItem="9a1-9m-zaN" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="8" id="tXt-HO-rQN"/>
+                        </constraints>
                     </view>
+                    <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
+                    <connections>
+                        <outlet property="editTagView" destination="9a1-9m-zaN" id="Aq2-ES-7cx"/>
+                        <outlet property="editViewHeight" destination="dck-9w-x87" id="881-Xg-nBH"/>
+                        <outlet property="selectTagView" destination="rMy-N5-Wop" id="bO3-vj-Ak5"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
+            <point key="canvasLocation" x="234.5" y="341.5"/>
         </scene>
     </scenes>
 </document>

@@ -13,8 +13,10 @@
 
 @interface ViewController ()<FXTagViewDelegate>
 
-@property (nonatomic,strong) FXTagView *tagEditView;
-@property (nonatomic,strong) FXTagView *tagselectView;
+@property (weak, nonatomic) IBOutlet FXTagView *editTagView;
+@property (weak, nonatomic) IBOutlet FXTagView *selectTagView;
+
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *editViewHeight;
 
 @end
 
@@ -22,31 +24,36 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    FXTagView *tagEditView =[FXTagView tagViewFrame:CGRectMake(20, 20, 300, 100) showType:ShowViewTypeEdit];
-    [self.view addSubview:tagEditView];
-    self.tagEditView = tagEditView;
-
-    FXTagView *tagSelectedView = [FXTagView tagViewFrame:CGRectMake(20, 200, 300, 100) showType:ShowViewTypeSelected showTagArray:@[@"你好",@"英语魔方秀",@"四级英语",@"大宝天天见"]];
-    tagSelectedView.tagDelegate = self;
-    [self.view addSubview:tagSelectedView];
-    self.tagselectView = tagSelectedView;
     
-    // Do any additional setup after loading the view, typically from a nib.
+    self.editTagView.showType   = ShowViewTypeEdit;
+    self.selectTagView.showType = ShowViewTypeSelected;
+    [self.selectTagView addTags:@[@"你好",@"英语魔方秀",@"四级英语",@"大宝天天见"]];
+    self.selectTagView.tagDelegate = self;
+    self.editTagView.tagDelegate =self;
+
 }
 
 
 
 - (void)tagDidSelectText:(NSString *)selectText tagView:(FXTagView *)tagView{
     NSLog(@"%@",selectText);
-    [self.tagEditView addTag:selectText];
+    [self.editTagView addTag:selectText];
 }
 
 
 - (void)tagUnSelectText:(NSString *)unSelectText tagView:(FXTagView *)tagView{
 
     NSLog(@"%@",unSelectText);
-    [self.tagEditView removeTag:unSelectText];
+    [self.editTagView removeTag:unSelectText];
 }
+
+- (void)heightDidChangedTagView:(FXTagView *)tagView height:(CGFloat)height {
+
+    self.editViewHeight.constant = height;
+    [self.view layoutIfNeeded];
+
+}
+
 
 
 - (void)didReceiveMemoryWarning {

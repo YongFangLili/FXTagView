@@ -6,8 +6,10 @@
 //  Copyright © 2015年 ftxbird. All rights reserved.
 //
 
+
 #import <UIKit/UIKit.h>
 
+#define UIColorFromRGB(rgbValue) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 
 @class FXTagTextField;
 @class FXTagView;
@@ -21,21 +23,7 @@
  *
  *  @param tagView FXTagView 实例
  */
--(void)heightDidChangedTagView:(FXTagView*)tagView;
-
-/**
- *  开始编辑
- *
- *  @param tagView FXTagView 实例
- */
--(void)tagDidBeginEditing:(FXTagView*)tagView;
-
-/**
- *  结束编辑
- *
- *  @param tagView FXTagView 实例
- */
--(void)tagDidEndEditing:(FXTagView*)tagView;
+-(void)heightDidChangedTagView:(FXTagView*)tagView height:(CGFloat)height;
 
 /**
  *  选择显示模式下,单击点击选择的Tag文本
@@ -116,7 +104,12 @@ typedef NS_ENUM(NSInteger, ShowViewType) {
  */
 - (void)addTag:(NSString *)tagString;
 
-
+/**
+ *  添加一个数组字符串
+ *
+ *  @param tags 待添加字符串数组
+ */
+- (void)addTags:(NSArray *)tags;
 /**
  *  移除一个Tag
  *
