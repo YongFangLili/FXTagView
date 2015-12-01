@@ -25,6 +25,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    self.view.backgroundColor = [UIColor lightGrayColor];
+    
     self.editTagView.showType   = ShowViewTypeEdit;
     self.selectTagView.showType = ShowViewTypeSelected;
     [self.selectTagView addTags:@[@"你好",@"英语魔方秀",@"四级英语",@"大宝天天见"]];
@@ -54,6 +56,12 @@
 
 }
 
+
+- (void)tagDeletedText:(NSString *)text tagView:(FXTagView *)tagView {
+
+    [self.selectTagView changeTagStateSpecialTag:text];
+    NSLog(@"删除文本%@",text);
+}
 
 
 - (void)didReceiveMemoryWarning {

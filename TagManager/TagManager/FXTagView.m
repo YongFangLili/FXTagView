@@ -8,22 +8,17 @@
 
 #import "FXTagView.h"
 
-CGFloat   const columnSpace       = 5;  //列间距
-CGFloat   const rowSpace          = 5;  //行间距
-CGFloat   const rowHeight         = 44; //行高
-NSInteger const limitTagCount     = 15; //标签数量限制
-NSInteger const limitTagWordCount = 15; //单标签文本字数限制
 
-@interface      FXTagTextField : UITextField
+@interface     FXTagTextField : UITextField
 
 @end
+
 
 @implementation FXTagTextField
 
 - (CGRect)textRectForBounds:(CGRect)bounds {
     return CGRectInset( bounds , 9 , 0 );
 }
-
 
 - (CGRect)editingRectForBounds:(CGRect)bounds {
     return CGRectInset( bounds , 9 , 0 );
@@ -32,19 +27,16 @@ NSInteger const limitTagWordCount = 15; //单标签文本字数限制
 @end
 
 
+/**根据项目需要,此处做调整*/
+CGFloat   const columnSpace       = 8;  //列间距
+CGFloat   const rowSpace          = 8;  //行间距
+CGFloat   const rowHeight         = 30; //行高
+CGFloat   const inputViewWidth    = 100;//输入框宽度
+NSInteger const limitTagCount     = 15; //标签数量限制
+NSInteger const limitTagWordCount = 15; //单标签文本字数限制
+
+
 @interface FXTagView()<UITextFieldDelegate>
-
-/**当前容器高度*/
-@property (nonatomic,assign) CGFloat currentViewHeight;
-
-/**设置标签字体*/
-@property (nonatomic,strong) UIFont  *tagFont;
-
-/**设置标签颜色*/
-@property (nonatomic,strong) UIColor *tagFontColor;
-
-/**设置标签左边距*/
-@property (nonatomic,assign) CGFloat tagLeftSpace;
 
 /**缓存TagsButton*/
 @property (nonatomic,strong) NSArray *tagButtonPool;
@@ -76,7 +68,7 @@ NSInteger const limitTagWordCount = 15; //单标签文本字数限制
 
 + (instancetype)tagViewFrame:(CGRect)frame showType:(ShowViewType)showType {
 
-    FXTagView *tagView = [[FXTagView alloc] initWithFrame:frame];
+    FXTagView *tagView = [[self alloc] initWithFrame:frame];
     tagView.showType = showType;
     
     switch (showType) {
@@ -110,14 +102,6 @@ NSInteger const limitTagWordCount = 15; //单标签文本字数限制
 }
 
 
-- (void)setShowType:(ShowViewType)showType {
-    _showType = showType;
-    if (showType == ShowViewTypeEdit) {
-        [self layoutSubviews];
-    }
-}
-
-
 - (void)dealloc {
     
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIMenuControllerWillShowMenuNotification object:nil];
@@ -130,23 +114,24 @@ NSInteger const limitTagWordCount = 15; //单标签文本字数限制
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(WillShowMenu:) name:UIMenuControllerWillShowMenuNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(HideMenu:) name:UIMenuControllerDidHideMenuNotification object:nil];
     
-    _currentViewHeight = self.frame.size.height;
-    
     _showType = ShowViewTypeNormal;
     
     _tagFont = [UIFont systemFontOfSize:14.0f];
-    
+    _tagFontColor = UIColorFromRGB(0x3F3F3F);
+    _tagBackGroundColor = [UIColor whiteColor];
+    _tagBorderColor = UIColorFromRGB(0xCACACA);
     _tagsArray = [NSMutableArray array];
-
-    self.backgroundColor = [UIColor orangeColor];
+    _tagSeletedColor = UIColorFromRGB(0x0FA2F9);
     
-    //初始化重用池
+    self.backgroundColor = _tagBackGroundColor;
+    
+    //初始化缓存池
     [self initReusableButtonPool];
 }
 
 
 /**
- *  初始化重用池
+ *  初始化缓存池
  */
 - (void)initReusableButtonPool {
     NSMutableArray *tempArray = [NSMutableArray array];
@@ -154,17 +139,19 @@ NSInteger const limitTagWordCount = 15; //单标签文本字数限制
     for (NSInteger i =0; i< limitTagCount; i++) {
         UIButton *tagBtn = [UIButton new];
         [tagBtn.titleLabel setFont:_tagFont];
-        [tagBtn setBackgroundColor:UIColorFromRGB(0xf0f0f0)];
-        [tagBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-        tagBtn.layer.cornerRadius = 4;
+        [tagBtn setBackgroundColor:_tagBackGroundColor];
+        [tagBtn setTitleColor:_tagFontColor forState:UIControlStateNormal];
+        tagBtn.layer.cornerRadius = ceil(rowHeight/2);
         tagBtn.layer.masksToBounds = YES;
+        tagBtn.layer.borderColor = _tagBorderColor.CGColor;
+        tagBtn.layer.borderWidth = 1/[UIScreen mainScreen].scale;
         [tempArray addObject:tagBtn];
     }
     self.tagButtonPool = [tempArray copy];
 }
 
 /**
- *  获取重用池中的TagButton
+ *  获取缓存中的TagButton
  *
  *  @return Button
  */
@@ -185,45 +172,30 @@ NSInteger const limitTagWordCount = 15; //单标签文本字数限制
  */
 - (void)tagButtonSelected:(UIButton *)sender {
     
+    if(self.showType ==ShowViewTypeNormal) return;
+    
     if (self.showType == ShowViewTypeEdit) {
         [self becomeFirstResponder];
         UIMenuController *menu = [UIMenuController sharedMenuController];
         if (sender.selected) {
-            [sender setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-            [sender setBackgroundColor:UIColorFromRGB(0xf0f0f0)];
+            [sender setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+            [sender setBackgroundColor:self.tagSeletedColor];
             sender.selected=NO;
             [menu setMenuVisible:NO animated:YES];
         }else{
             [menu setMenuVisible:NO];
-            [_tagDeleteButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-            [_tagDeleteButton setBackgroundColor:UIColorFromRGB(0xf0f0f0)];
-            _tagDeleteButton.selected=NO;
+            
+            [sender setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+            [sender setBackgroundColor:self.tagSeletedColor];
+             sender.selected=NO;
             _tagDeleteButton=sender;
             [menu setTargetRect:sender.frame inView:self];
             [menu setMenuVisible:YES animated:YES];
         }
     }else if(self.showType == ShowViewTypeSelected) {
     
-        sender.selected = !sender.selected;
-        
-        if (sender.selected) {
-            sender.layer.borderColor = [UIColor blueColor].CGColor;
-            sender.layer.borderWidth = 2.0f;
-            
-            if([self.tagDelegate respondsToSelector:@selector(tagDidSelectText:tagView:)]){
-                [self.tagDelegate tagDidSelectText:sender.currentTitle tagView:self];
-            }
-        }else {
-            sender.layer.borderColor = [UIColor whiteColor].CGColor;
-            sender.layer.borderWidth = 1.0f;
-            
-            if([self.tagDelegate respondsToSelector:@selector(tagUnSelectText:tagView:)]){
-                [self.tagDelegate tagUnSelectText:sender.currentTitle tagView:self];
-            }
-        }
+        [self changeButtonSelectedState:sender];
     }
-    
-    
 }
 
 /**
@@ -307,6 +279,68 @@ NSInteger const limitTagWordCount = 15; //单标签文本字数限制
    
 }
 
+/**
+ *  改变指定字符串 的控件选择状态
+ *
+ *  @param tagString 待改变状态控件的文本
+ */
+- (void)changeTagStateSpecialTag:(NSString *)tagString  {
+
+   NSInteger foundedIndex =  [self findTagIndexByTagStr:tagString];
+    
+   if (foundedIndex == -1) return;
+    
+    UIButton *tagButton = [self.tagButtonPool objectAtIndex:foundedIndex];
+    
+    [self changeButtonSelectedState:tagButton];
+}
+
+
+- (void)changeButtonSelectedState:(UIButton *)sender {
+
+    sender.selected = !sender.selected;
+    if (sender.selected) {
+        sender.layer.borderColor = self.tagSeletedColor.CGColor;
+        [sender setTitleColor:self.tagSeletedColor forState:UIControlStateNormal];
+        
+        
+        if([self.tagDelegate respondsToSelector:@selector(tagDidSelectText:tagView:)]){
+            [self.tagDelegate tagDidSelectText:sender.currentTitle tagView:self];
+        }
+    }else {
+        sender.layer.borderColor = self.tagBorderColor.CGColor;
+        [sender setTitleColor:self.tagFontColor forState:UIControlStateNormal];
+        
+        if([self.tagDelegate respondsToSelector:@selector(tagUnSelectText:tagView:)]){
+            [self.tagDelegate tagUnSelectText:sender.currentTitle tagView:self];
+        }
+    }
+}
+
+
+
+
+/**
+ *  搜索指定文本所在 索引
+ *
+ *  @param tagString 搜索字符串
+ *
+ *  @return -1: 未找到 0-N: 寻找到
+ */
+- (NSInteger)findTagIndexByTagStr:(NSString *)tagString {
+
+    NSInteger foundedIndex = -1;
+    for (NSString *tempTagString in self.tagsArray)
+    {
+        if ([tagString isEqualToString:tempTagString])
+        {
+            foundedIndex = (NSInteger)[self.tagsArray indexOfObject:tempTagString];
+            break;
+        }
+    }
+    return foundedIndex;
+}
+
 
 /**
  *  移除一个Tag
@@ -315,22 +349,13 @@ NSInteger const limitTagWordCount = 15; //单标签文本字数限制
  */
 - (void)removeTag:(NSString *)tagString {
     
-    NSInteger foundedIndex = -1;
-    for (NSString *tempTagString in self.tagsArray)
-    {
-        if ([tagString isEqualToString:tempTagString])
-        {
-            NSLog(@"FOUND!");
-            foundedIndex = (NSInteger)[self.tagsArray indexOfObject:tempTagString];
-            break;
-        }
-    }
+    NSInteger foundIndex = [self findTagIndexByTagStr:tagString];
     
-    if (foundedIndex == -1)
+    if ([self findTagIndexByTagStr:tagString] == -1)
     {
         return;
     }
-    [self.tagsArray removeObjectAtIndex:foundedIndex];
+    [self.tagsArray removeObjectAtIndex:foundIndex];
     
     [self layoutSubviews];
     
@@ -387,7 +412,7 @@ NSInteger const limitTagWordCount = 15; //单标签文本字数限制
         
         if([self ifNeedAddRowCurrentX:moveX width:btnWidth]){
             moveX = columnSpace;
-            moveY += (44+rowSpace);
+            moveY += (rowHeight+rowSpace);
         }
         tagBtn.frame = CGRectMake(moveX, moveY, btnWidth, rowHeight);
         moveX += btnWidth + columnSpace;
@@ -399,16 +424,14 @@ NSInteger const limitTagWordCount = 15; //单标签文本字数限制
         BOOL addRowForTextField = [self ifNeedAddRowCurrentX:moveX width:self.inputTextField.frame.size.width];
         if (addRowForTextField) {
             moveX = columnSpace;
-            moveY += (44 +rowSpace);
+            moveY += (rowHeight +rowSpace);
         }
-        self.inputTextField.frame = CGRectMake(moveX, moveY, 80, rowHeight);
+        self.inputTextField.frame = CGRectMake(moveX, moveY, inputViewWidth, rowHeight);
     }
     
     //更新容器Frame
     CGRect tempFrame = self.frame;
-    
     tempFrame.size.height = moveY + rowHeight + columnSpace;
-    
     self.frame = tempFrame;
 }
 
@@ -416,7 +439,7 @@ NSInteger const limitTagWordCount = 15; //单标签文本字数限制
 
 - (UIButton *)tagButtonWithTag:(NSString *)tagTitle index:(NSInteger)index
 {
-    //从重用池取
+    //从缓存取
     UIButton *tagBtn = [self dequeueReusableTagButton:index];
     [tagBtn setTitle:tagTitle forState:UIControlStateNormal];
     //选择模式添加 点击事件
@@ -430,14 +453,16 @@ NSInteger const limitTagWordCount = 15; //单标签文本字数限制
 - (FXTagTextField *)inputTextField {
 
     if (_inputTextField == nil) {
-        FXTagTextField* tf = [[FXTagTextField alloc] initWithFrame:CGRectMake(0, 0, 100, rowHeight)];
-        tf.backgroundColor = [UIColor whiteColor];
-        tf.autocorrectionType = UITextAutocorrectionTypeNo;
-        [tf addTarget:self action:@selector(textFieldDidChange:)forControlEvents:UIControlEventEditingChanged];
-        tf.delegate = self;
-        tf.placeholder=@"请输入标签";
-        tf.returnKeyType = UIReturnKeyDone;
-        _inputTextField = tf;
+        FXTagTextField* inputField = [[FXTagTextField alloc] init];
+        inputField.backgroundColor = [UIColor whiteColor];
+        inputField.font = _tagFont;
+        inputField.textColor = _tagFontColor;
+        inputField.autocorrectionType = UITextAutocorrectionTypeNo;
+        [inputField addTarget:self action:@selector(textFieldDidChange:)forControlEvents:UIControlEventEditingChanged];
+        inputField.delegate = self;
+        inputField.placeholder=@"输入标签";
+        inputField.returnKeyType = UIReturnKeyDone;
+        _inputTextField = inputField;
         [self addSubview:_inputTextField];
         
     }
@@ -483,14 +508,15 @@ NSInteger const limitTagWordCount = 15; //单标签文本字数限制
 #pragma mark - Custom Menu
 
 - (void)HideMenu:(NSNotification *)notification{
-    [_tagDeleteButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-    [_tagDeleteButton setBackgroundColor:UIColorFromRGB(0xf0f0f0)];
+    [_tagDeleteButton setTitleColor:_tagFontColor forState:UIControlStateNormal];
+    [_tagDeleteButton setBackgroundColor:_tagBackGroundColor];
     _tagDeleteButton.selected=NO;
     _tagDeleteButton=nil;
+    
 }
 - (void)WillShowMenu:(NSNotification *)notification{
-    [_tagDeleteButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    [_tagDeleteButton setBackgroundColor:[UIColor grayColor]];
+    [_tagDeleteButton setTitleColor:_tagBackGroundColor forState:UIControlStateNormal];
+    [_tagDeleteButton setBackgroundColor:_tagSeletedColor];
     _tagDeleteButton.selected=YES;
 }
 
@@ -508,6 +534,10 @@ NSInteger const limitTagWordCount = 15; //单标签文本字数限制
 
 - (void)delete:(id)sender{
     [self removeTag:_tagDeleteButton.currentTitle];
+    
+    if ([self.tagDelegate respondsToSelector:@selector(tagDeletedText:tagView:)]) {
+        [self.tagDelegate tagDeletedText:_tagDeleteButton.currentTitle tagView:self];
+    }
 }
 
 @end
