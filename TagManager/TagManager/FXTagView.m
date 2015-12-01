@@ -90,41 +90,6 @@ NSInteger const limitTagWordCount = 15; //单标签文本字数限制
     return self;
 }
 
-+ (instancetype)tagViewFrame:(CGRect)frame showType:(ShowViewType)showType {
-
-    FXTagView *tagView = [[self alloc] initWithFrame:frame];
-    tagView.showType = showType;
-    
-    switch (showType) {
-        case ShowViewTypeNormal: {
-            
-            break;
-        }
-        case ShowViewTypeEdit: {
-            //添加输入框
-            [tagView addSubview:tagView.inputTextField];
-            break;
-        }
-        case ShowViewTypeSelected: {
-            
-            break;
-        }
-        default: {
-            break;
-        }
-    }
-    
-    return tagView;
-}
-
-
-+ (instancetype)tagViewFrame:(CGRect)frame showType:(ShowViewType)showType showTagArray:(NSArray *)tags {
-    FXTagView *tagView = [self tagViewFrame:frame showType:showType];
-    [tagView addTags:tags];
-    
-    return tagView;
-}
-
 
 - (void)dealloc {
     
@@ -233,19 +198,14 @@ NSInteger const limitTagWordCount = 15; //单标签文本字数限制
         if([self.tagDelegate respondsToSelector:@selector(tagDidSelectText:tagView:)]){
             [self.tagDelegate tagDidSelectText:sender.currentTitle tagView:self];
         }
-        
-        
     }else {
         sender.backgroundColor = self.backgroundColor;
         sender.layer.borderColor = self.tagBorderColor.CGColor;
         [sender setTitleColor:self.tagFontColor forState:UIControlStateNormal];
-        
-        
         if([self.tagDelegate respondsToSelector:@selector(tagUnSelectText:tagView:)]){
             [self.tagDelegate tagUnSelectText:sender.currentTitle tagView:self];
         }
     }
-    
 }
 
 
@@ -284,7 +244,7 @@ NSInteger const limitTagWordCount = 15; //单标签文本字数限制
 
     [self.tagsArray addObject:tagString];
 
-    [self layoutSubviews];
+    [self layoutTagViews];
     
     if ([self.tagDelegate respondsToSelector:@selector(heightDidChangedTagView:height:)]) {
         [self.tagDelegate heightDidChangedTagView:self height:self.frame.size.height];
@@ -310,7 +270,7 @@ NSInteger const limitTagWordCount = 15; //单标签文本字数限制
         }
     }
     
-    [self layoutSubviews];
+    [self layoutTagViews];
    
 }
 
@@ -376,7 +336,7 @@ NSInteger const limitTagWordCount = 15; //单标签文本字数限制
     }
     [self.tagsArray removeObjectAtIndex:foundIndex];
     
-    [self layoutSubviews];
+    [self layoutTagViews];
     
     if ([self.tagDelegate respondsToSelector:@selector(heightDidChangedTagView:height:)]) {
         [self.tagDelegate heightDidChangedTagView:self height:self.frame.size.height];
@@ -405,8 +365,7 @@ NSInteger const limitTagWordCount = 15; //单标签文本字数限制
     }
 }
 
-
-- (void)layoutSubviews {
+- (void)layoutTagViews {
 
     if(_showType == ShowViewTypeEdit &&!_inputTextField) {
         [self inputTextField];
@@ -415,7 +374,7 @@ NSInteger const limitTagWordCount = 15; //单标签文本字数限制
     //子控件从视图移除
     for (UIView *view in self.subviews) {
         if ([view isKindOfClass:[UIButton class]]) {
-
+            
             [view removeFromSuperview];
         }
     }
@@ -455,6 +414,16 @@ NSInteger const limitTagWordCount = 15; //单标签文本字数限制
     CGRect tempFrame = self.frame;
     tempFrame.size.height = moveY + rowHeight + columnSpace;
     self.frame = tempFrame;
+
+}
+
+
+- (void)layoutSubviews {
+
+    if(_showType == ShowViewTypeEdit &&!_inputTextField) {
+        [self inputTextField];
+    }
+    [super layoutSubviews];
 }
 
 
@@ -475,7 +444,7 @@ NSInteger const limitTagWordCount = 15; //单标签文本字数限制
 - (FXTagTextField *)inputTextField {
 
     if (_inputTextField == nil) {
-        FXTagTextField* inputField = [[FXTagTextField alloc] init];
+        FXTagTextField* inputField = [[FXTagTextField alloc] initWithFrame:CGRectMake(columnSpace, rowSpace, inputViewWidth, rowHeight)];
         inputField.backgroundColor = [UIColor whiteColor];
         inputField.font = _tagFont;
         inputField.textColor = _tagFontColor;
@@ -584,20 +553,20 @@ NSInteger const limitTagWordCount = 15; //单标签文本字数限制
 
 #pragma mark - Custom Menu
 
-- (void)HideMenu:(NSNotification *)notification{
+- (void)HideMenu:(NSNotification *)notification {
     [_tagDeleteButton setTitleColor:_tagFontColor forState:UIControlStateNormal];
     [_tagDeleteButton setBackgroundColor:_tagBackGroundColor];
     _tagDeleteButton.selected=NO;
     _tagDeleteButton=nil;
     
 }
-- (void)WillShowMenu:(NSNotification *)notification{
+- (void)WillShowMenu:(NSNotification *)notification {
     [_tagDeleteButton setTitleColor:_tagBackGroundColor forState:UIControlStateNormal];
     [_tagDeleteButton setBackgroundColor:_tagSeletedColor];
     _tagDeleteButton.selected=YES;
 }
 
-- (BOOL)canBecomeFirstResponder{
+- (BOOL)canBecomeFirstResponder {
     return YES;
 }
 
@@ -621,8 +590,5 @@ NSInteger const limitTagWordCount = 15; //单标签文本字数限制
         [self.tagDelegate tagDeletedText:tempStr tagView:self];
     }
 }
-
-
-
 
 @end

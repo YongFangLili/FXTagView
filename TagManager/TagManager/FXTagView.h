@@ -106,31 +106,9 @@ typedef NS_ENUM(NSInteger, ShowViewType) {
 /**限时输入字符*/
 @property (nonatomic,assign) BOOL limitChar;
 
-/**
- *  标签View 初始化方法 (仅供纯代码创建使用)
- *
- *  @param frame    tagView初始Frame
- *  @param showType 展示类型
- *
- *  @return 返回TagView实例
- */
-+ (instancetype)tagViewFrame:(CGRect)frame showType:(ShowViewType)showType;
 
 /**
- *  标签View 初始化方法 (仅供纯代码创建使用)
-
- *
- *  @param frame    tagView初始Frame
- *  @param showType 展示类型
- *  @param tags     默认文本数组
- *
- *  @return 返回TagView实例
- */
-+ (instancetype)tagViewFrame:(CGRect)frame showType:(ShowViewType)showType showTagArray:(NSArray *)tags;
-
-
-/**
- *  添加一个Tag   (已优化为从重用池取, 还可以继续优化不用整个遍历!!!)
+ *  添加一个Tag
  *
  *  @param tagString 待添加Tag文本
  */
