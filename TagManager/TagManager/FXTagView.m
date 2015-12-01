@@ -54,6 +54,7 @@ CGFloat   const columnSpace       = 8;  //列间距
 CGFloat   const rowSpace          = 8;  //行间距
 CGFloat   const rowHeight         = 30; //行高
 CGFloat   const inputViewWidth    = 100;//输入框宽度
+CGFloat   const tagMinWidth       = 60; //标签最小宽度
 NSInteger const limitTagCount     = 15; //标签数量限制
 NSInteger const limitTagWordCount = 15; //单标签文本字数限制
 
@@ -322,9 +323,18 @@ NSInteger const limitTagWordCount = 15; //单标签文本字数限制
     
    if (foundedIndex == -1) return;
     
-    UIButton *tagButton = [self.tagButtonPool objectAtIndex:foundedIndex];
+    UIButton *sender = [self.tagButtonPool objectAtIndex:foundedIndex];
     
-    [self changeButtonSelectedState:tagButton];
+    sender.selected = !sender.selected;
+    if (sender.selected) {
+        sender.layer.borderColor = self.tagSeletedColor.CGColor;
+        [sender setTitleColor:self.tagSeletedColor forState:UIControlStateNormal];
+        sender.backgroundColor = self.backgroundColor;
+    }else {
+        sender.backgroundColor = self.backgroundColor;
+        sender.layer.borderColor = self.tagBorderColor.CGColor;
+        [sender setTitleColor:self.tagFontColor forState:UIControlStateNormal];
+    }
 }
 
 /**
@@ -400,7 +410,7 @@ NSInteger const limitTagWordCount = 15; //单标签文本字数限制
         [self inputTextField];
     }
     
-    //移除之前的子控件
+    //子控件从视图移除
     for (UIView *view in self.subviews) {
         if ([view isKindOfClass:[UIButton class]]) {
 
@@ -417,7 +427,9 @@ NSInteger const limitTagWordCount = 15; //单标签文本字数限制
         NSString *tagText = (NSString *)[self.tagsArray objectAtIndex:i];
         UIButton *tagBtn = [self tagButtonWithTag:tagText index:i];
         CGFloat btnWidth = [tagBtn.titleLabel.text sizeWithAttributes:@{NSFontAttributeName:_tagFont}].width  + 20.0f;
-        
+        if(btnWidth < tagMinWidth) {
+            btnWidth = tagMinWidth;
+        }
         if([self ifNeedAddRowCurrentX:moveX width:btnWidth]){
             moveX = columnSpace;
             moveY += (rowHeight+rowSpace);
@@ -498,6 +510,12 @@ NSInteger const limitTagWordCount = 15; //单标签文本字数限制
         [lastButton setTitleColor:_tagFontColor forState:UIControlStateNormal];
         [lastButton setBackgroundColor:_tagBackGroundColor];
         [self removeTag:lastButton.currentTitle];
+        
+        if ([self.tagDelegate respondsToSelector:@selector(tagDeletedText:tagView:)]){
+            if(self.showType == ShowViewTypeEdit) {
+                [self.tagDelegate tagDeletedText:lastButton.currentTitle tagView:self];
+            }
+        }
     }
     else{
         [lastButton setTitleColor:_tagBackGroundColor forState:UIControlStateNormal];
@@ -505,11 +523,7 @@ NSInteger const limitTagWordCount = 15; //单标签文本字数限制
         lastButton.selected=YES;
     }
     
-//    if ([self.tagDelegate respondsToSelector:@selector(tagDeletedText:tagView:)]){
-//        if(self.showType == ShowViewTypeEdit) {
-//            [self.tagDelegate tagDeletedText:lastButton.currentTitle tagView:self];
-//        }
-//    }
+    
 }
 
 
@@ -522,7 +536,7 @@ NSInteger const limitTagWordCount = 15; //单标签文本字数限制
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
    
     [self addTag:textField.text];
-    _inputTextField.text= @"\u200B";
+    _inputTextField.text= nil;
     
     return YES;
 }
@@ -574,15 +588,16 @@ NSInteger const limitTagWordCount = 15; //单标签文本字数限制
 }
 
 - (void)delete:(id)sender{
-   
-    [self removeTag:_tagDeleteButton.currentTitle];
+    
+    NSString *tempStr = _tagDeleteButton.currentTitle;
+    
+    [self removeTag:tempStr];
     
     
-//    if ([self.tagDelegate respondsToSelector:@selector(tagDeletedText:tagView:)]){
-//        if(self.showType == ShowViewTypeEdit) {
-//            [self.tagDelegate tagDeletedText:_tagDeleteButton.currentTitle tagView:self];
-//        }
-//    }
+    if ([self.tagDelegate respondsToSelector:@selector(tagDeletedText:tagView:)]){
+
+        [self.tagDelegate tagDeletedText:tempStr tagView:self];
+    }
 }
 
 @end
