@@ -1,5 +1,6 @@
-FXTagView 用于标签展示, 选择, 编辑 操作.
-删除相关UI操作 源自 JLTextFieldTagView  :https://github.com/jlancer/JLTextFieldTagView 在此表示感谢
+FXTagView 用于标签展示, 选择, 编辑 ,删除相关UI操作 
+
+部分灵感源自 JLTextFieldTagView  :https://github.com/jlancer/JLTextFieldTagView 在此表示感谢
 
 ##截图
 ![image](https://github.com/ftxbird/FXTagView/blob/master/tagViewScreenShot.png) 
