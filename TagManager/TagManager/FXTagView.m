@@ -200,16 +200,15 @@ NSInteger const limitTagWordCount = 15; //单标签文本字数限制
         [self becomeFirstResponder];
         UIMenuController *menu = [UIMenuController sharedMenuController];
         if (sender.selected) {
-            [sender setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-            [sender setBackgroundColor:self.tagSeletedColor];
+            [sender setTitleColor:_tagBackGroundColor forState:UIControlStateNormal];
+            [sender setBackgroundColor:_tagSeletedColor];
             sender.selected=NO;
             [menu setMenuVisible:NO animated:YES];
         }else{
             [menu setMenuVisible:NO];
-            
-            [sender setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-            [sender setBackgroundColor:self.tagSeletedColor];
-             sender.selected=NO;
+            [_tagDeleteButton setTitleColor:_tagFontColor forState:UIControlStateNormal];
+            [_tagDeleteButton setBackgroundColor:_tagBackGroundColor];
+            _tagDeleteButton.selected=NO;
             _tagDeleteButton=sender;
             [menu setTargetRect:sender.frame inView:self];
             [menu setMenuVisible:YES animated:YES];
@@ -218,6 +217,32 @@ NSInteger const limitTagWordCount = 15; //单标签文本字数限制
     
         [self changeButtonSelectedState:sender];
     }
+}
+
+
+- (void)changeButtonSelectedState:(UIButton *)sender {
+    
+    sender.selected = !sender.selected;
+    if (sender.selected) {
+        sender.layer.borderColor = self.tagSeletedColor.CGColor;
+        [sender setTitleColor:self.tagSeletedColor forState:UIControlStateNormal];
+        sender.backgroundColor = self.backgroundColor;
+        
+        if([self.tagDelegate respondsToSelector:@selector(tagDidSelectText:tagView:)]){
+            [self.tagDelegate tagDidSelectText:sender.currentTitle tagView:self];
+        }
+        
+        
+    }else {
+        sender.backgroundColor = self.backgroundColor;
+        sender.layer.borderColor = self.tagBorderColor.CGColor;
+        [sender setTitleColor:self.tagFontColor forState:UIControlStateNormal];
+        
+        if([self.tagDelegate respondsToSelector:@selector(tagUnSelectText:tagView:)]){
+            [self.tagDelegate tagUnSelectText:sender.currentTitle tagView:self];
+        }
+    }
+    
 }
 
 
@@ -302,33 +327,6 @@ NSInteger const limitTagWordCount = 15; //单标签文本字数限制
     [self changeButtonSelectedState:tagButton];
 }
 
-
-
-
-- (void)changeButtonSelectedState:(UIButton *)sender {
-
-    sender.selected = !sender.selected;
-    if (sender.selected) {
-        sender.layer.borderColor = self.tagSeletedColor.CGColor;
-        [sender setTitleColor:self.tagSeletedColor forState:UIControlStateNormal];
-        
-        
-        if([self.tagDelegate respondsToSelector:@selector(tagDidSelectText:tagView:)]){
-            [self.tagDelegate tagDidSelectText:sender.currentTitle tagView:self];
-        }
-    }else {
-        sender.layer.borderColor = self.tagBorderColor.CGColor;
-        [sender setTitleColor:self.tagFontColor forState:UIControlStateNormal];
-        
-        if([self.tagDelegate respondsToSelector:@selector(tagUnSelectText:tagView:)]){
-            [self.tagDelegate tagUnSelectText:sender.currentTitle tagView:self];
-        }
-    }
-}
-
-
-
-
 /**
  *  搜索指定文本所在 索引
  *
@@ -371,11 +369,6 @@ NSInteger const limitTagWordCount = 15; //单标签文本字数限制
     if ([self.tagDelegate respondsToSelector:@selector(heightDidChangedTagView:height:)]) {
         [self.tagDelegate heightDidChangedTagView:self height:self.frame.size.height];
     }
-    
-    
-    if ([self.tagDelegate respondsToSelector:@selector(tagDeletedText:tagView:)]) {
-        [self.tagDelegate tagDeletedText:tagString tagView:self];
-    }
 
 }
 
@@ -410,6 +403,7 @@ NSInteger const limitTagWordCount = 15; //单标签文本字数限制
     //移除之前的子控件
     for (UIView *view in self.subviews) {
         if ([view isKindOfClass:[UIButton class]]) {
+
             [view removeFromSuperview];
         }
     }
@@ -495,10 +489,14 @@ NSInteger const limitTagWordCount = 15; //单标签文本字数限制
 
 - (void)deleteBackward {
 
+    if (self.inputTextField.text.length > 0) return;
     if (self.tagsArray.count <=0) return;
     
      UIButton *lastButton = [self.tagButtonPool objectAtIndex:(self.tagsArray.count-1)];
     if (lastButton.selected) {
+        lastButton.selected=NO;
+        [lastButton setTitleColor:_tagFontColor forState:UIControlStateNormal];
+        [lastButton setBackgroundColor:_tagBackGroundColor];
         [self removeTag:lastButton.currentTitle];
     }
     else{
@@ -507,6 +505,11 @@ NSInteger const limitTagWordCount = 15; //单标签文本字数限制
         lastButton.selected=YES;
     }
     
+//    if ([self.tagDelegate respondsToSelector:@selector(tagDeletedText:tagView:)]){
+//        if(self.showType == ShowViewTypeEdit) {
+//            [self.tagDelegate tagDeletedText:lastButton.currentTitle tagView:self];
+//        }
+//    }
 }
 
 
@@ -571,11 +574,15 @@ NSInteger const limitTagWordCount = 15; //单标签文本字数限制
 }
 
 - (void)delete:(id)sender{
+   
     [self removeTag:_tagDeleteButton.currentTitle];
     
-    if ([self.tagDelegate respondsToSelector:@selector(tagDeletedText:tagView:)]) {
-        [self.tagDelegate tagDeletedText:_tagDeleteButton.currentTitle tagView:self];
-    }
+    
+//    if ([self.tagDelegate respondsToSelector:@selector(tagDeletedText:tagView:)]){
+//        if(self.showType == ShowViewTypeEdit) {
+//            [self.tagDelegate tagDeletedText:_tagDeleteButton.currentTitle tagView:self];
+//        }
+//    }
 }
 
 @end

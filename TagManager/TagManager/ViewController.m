@@ -9,7 +9,6 @@
 #import "ViewController.h"
 #import "FXTagView.h"
 
-#define ScreenWidth [UIScreen mainScreen].bounds.size.width
 
 @interface ViewController ()<FXTagViewDelegate>
 
