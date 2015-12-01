@@ -532,13 +532,22 @@ NSInteger const limitTagWordCount = 15; //单标签文本字数限制
 
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string{
-    
+
     return YES;
 }
 
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
    
+    if(self.limitChar) {
+        NSString * regex = @"^[\u4E00-\u9FA5A-Za-z0-9_]+$";
+        NSPredicate *pred = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", regex];
+        BOOL isMatch = [pred evaluateWithObject:textField.text];
+        if (!isMatch) {
+            return NO;
+        }
+    }
+    
     [self addTag:textField.text];
     _inputTextField.text= nil;
     
@@ -612,5 +621,8 @@ NSInteger const limitTagWordCount = 15; //单标签文本字数限制
         [self.tagDelegate tagDeletedText:tempStr tagView:self];
     }
 }
+
+
+
 
 @end

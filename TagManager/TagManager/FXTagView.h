@@ -103,7 +103,8 @@ typedef NS_ENUM(NSInteger, ShowViewType) {
 /**标签选择颜色*/
 @property (nonatomic,strong) UIColor *tagSeletedColor;
 
-
+/**限时输入字符*/
+@property (nonatomic,assign) BOOL limitChar;
 
 /**
  *  标签View 初始化方法 (仅供纯代码创建使用)

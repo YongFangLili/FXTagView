@@ -26,11 +26,26 @@
     
     self.view.backgroundColor = [UIColor lightGrayColor];
     
+    /**
+     *  以下展示的是比较复杂的页面操作. 每种模式可以单独使用.
+     */
+    
+    //可编辑的 TagView
     self.editTagView.showType   = ShowViewTypeEdit;
+    
+    //限制只能输入 中文,英文,数字
+    self.editTagView.limitChar  = YES;
+    
+    
+    //可选择的 TagView
     self.selectTagView.showType = ShowViewTypeSelected;
+    
+    //可选择的 TagView 添加默认展示 字符串数组
     [self.selectTagView addTags:@[@"你好",@"英语魔方秀",@"四级英语",@"大宝天天见"]];
-    self.selectTagView.tagDelegate = self;
+    
+    //添加代理
     self.editTagView.tagDelegate =self;
+    self.selectTagView.tagDelegate = self;
 
 }
 
