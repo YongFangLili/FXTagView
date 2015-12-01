@@ -67,7 +67,8 @@ NSInteger const limitTagWordCount = 15; //单标签文本字数限制
 /**单击删除按钮*/
 @property (nonatomic,strong) UIButton *tagDeleteButton;
 
-
+/**用户回退删除是否打开*/
+@property (nonatomic,strong) UIButton *backDeleteButton ;
 @end
 
 
@@ -238,6 +239,7 @@ NSInteger const limitTagWordCount = 15; //单标签文本字数限制
         sender.backgroundColor = self.backgroundColor;
         sender.layer.borderColor = self.tagBorderColor.CGColor;
         [sender setTitleColor:self.tagFontColor forState:UIControlStateNormal];
+        
         
         if([self.tagDelegate respondsToSelector:@selector(tagUnSelectText:tagView:)]){
             [self.tagDelegate tagUnSelectText:sender.currentTitle tagView:self];
@@ -510,6 +512,7 @@ NSInteger const limitTagWordCount = 15; //单标签文本字数限制
         [lastButton setTitleColor:_tagFontColor forState:UIControlStateNormal];
         [lastButton setBackgroundColor:_tagBackGroundColor];
         [self removeTag:lastButton.currentTitle];
+        self.backDeleteButton = nil;
         
         if ([self.tagDelegate respondsToSelector:@selector(tagDeletedText:tagView:)]){
             if(self.showType == ShowViewTypeEdit) {
@@ -521,6 +524,7 @@ NSInteger const limitTagWordCount = 15; //单标签文本字数限制
         [lastButton setTitleColor:_tagBackGroundColor forState:UIControlStateNormal];
         [lastButton setBackgroundColor:_tagSeletedColor];
         lastButton.selected=YES;
+        self.backDeleteButton = lastButton;
     }
     
     
@@ -547,17 +551,26 @@ NSInteger const limitTagWordCount = 15; //单标签文本字数限制
 }
 
 - (void)textFieldDidBeginEditing:(UITextField *)textField {
-
+    
+    NSLog(@"textFieldDidBeginEditing");
+    
 }
 
 - (void)textFieldDidEndEditing:(UITextField *)textField {
 
-    
+    NSLog(@"textFieldDidEndEditing");
 }
 
 - (void)textFieldDidChange:(FXTagTextField *)textField {
+    NSLog(@"textFieldDidChange");
+    if (!self.backDeleteButton || !self.tagsArray.count) return;
+    
 
-
+    self.backDeleteButton.backgroundColor = self.backgroundColor;
+    self.backDeleteButton.layer.borderColor = self.tagBorderColor.CGColor;
+    [self.backDeleteButton setTitleColor:self.tagFontColor forState:UIControlStateNormal];
+    self.backDeleteButton.selected = NO;
+    self.backDeleteButton = nil;
 }
 
 #pragma mark - Custom Menu
