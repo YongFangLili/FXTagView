@@ -49,6 +49,9 @@
  */
 - (void)tagDeletedText:(NSString *)text tagView:(FXTagView *)tagView;
 
+
+
+
 @end
 
 /**

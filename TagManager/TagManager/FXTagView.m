@@ -9,7 +9,19 @@
 #import "FXTagView.h"
 
 
-@interface     FXTagTextField : UITextField
+@protocol keyInputTextFieldDelegate <NSObject>
+
+@optional
+/**
+ *  键盘删除键 回调
+ */
+- (void)deleteBackward;
+
+@end
+
+@interface  FXTagTextField : UITextField
+
+@property (nonatomic,assign) id<keyInputTextFieldDelegate> keyInputDelegate;
 
 @end
 
@@ -24,6 +36,16 @@
     return CGRectInset( bounds , 9 , 0 );
 }
 
+- (void)deleteBackward {
+
+    [super deleteBackward];
+    
+    if (_keyInputDelegate &&[_keyInputDelegate respondsToSelector:@selector(deleteBackward)]) {
+        [_keyInputDelegate deleteBackward];
+    }
+}
+
+
 @end
 
 
@@ -36,7 +58,7 @@ NSInteger const limitTagCount     = 15; //标签数量限制
 NSInteger const limitTagWordCount = 15; //单标签文本字数限制
 
 
-@interface FXTagView()<UITextFieldDelegate>
+@interface FXTagView()<UITextFieldDelegate,keyInputTextFieldDelegate>
 
 /**缓存TagsButton*/
 @property (nonatomic,strong) NSArray *tagButtonPool;
@@ -198,21 +220,6 @@ NSInteger const limitTagWordCount = 15; //单标签文本字数限制
     }
 }
 
-/**
- *  退格键删除标签 **** 待完成
- *
- *  @param sender
- */
-- (void)deleteBackspace:(UIButton *)sender{
-    
-    if (sender.selected) {
-        [self removeTag:sender.currentTitle];
-    }else{
-        [sender setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        [sender setBackgroundColor:[UIColor grayColor]];
-        sender.selected=YES;
-    }
-}
 
 /**
  *  添加一个Tag   ***此处可优化为不用整个遍历创建
@@ -296,6 +303,8 @@ NSInteger const limitTagWordCount = 15; //单标签文本字数限制
 }
 
 
+
+
 - (void)changeButtonSelectedState:(UIButton *)sender {
 
     sender.selected = !sender.selected;
@@ -361,6 +370,11 @@ NSInteger const limitTagWordCount = 15; //单标签文本字数限制
     
     if ([self.tagDelegate respondsToSelector:@selector(heightDidChangedTagView:height:)]) {
         [self.tagDelegate heightDidChangedTagView:self height:self.frame.size.height];
+    }
+    
+    
+    if ([self.tagDelegate respondsToSelector:@selector(tagDeletedText:tagView:)]) {
+        [self.tagDelegate tagDeletedText:tagString tagView:self];
     }
 
 }
@@ -460,6 +474,7 @@ NSInteger const limitTagWordCount = 15; //单标签文本字数限制
         inputField.autocorrectionType = UITextAutocorrectionTypeNo;
         [inputField addTarget:self action:@selector(textFieldDidChange:)forControlEvents:UIControlEventEditingChanged];
         inputField.delegate = self;
+        inputField.keyInputDelegate = self;
         inputField.placeholder=@"输入标签";
         inputField.returnKeyType = UIReturnKeyDone;
         _inputTextField = inputField;
@@ -478,10 +493,33 @@ NSInteger const limitTagWordCount = 15; //单标签文本字数限制
 
 #pragma textField delegate 
 
+- (void)deleteBackward {
+
+    if (self.tagsArray.count <=0) return;
+    
+     UIButton *lastButton = [self.tagButtonPool objectAtIndex:(self.tagsArray.count-1)];
+    if (lastButton.selected) {
+        [self removeTag:lastButton.currentTitle];
+    }
+    else{
+        [lastButton setTitleColor:_tagBackGroundColor forState:UIControlStateNormal];
+        [lastButton setBackgroundColor:_tagSeletedColor];
+        lastButton.selected=YES;
+    }
+    
+}
+
+
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string{
+    
+    return YES;
+}
+
+
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
    
     [self addTag:textField.text];
-    _inputTextField.text=nil;
+    _inputTextField.text= @"\u200B";
     
     return YES;
 }
