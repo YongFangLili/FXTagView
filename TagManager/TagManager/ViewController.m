@@ -16,6 +16,7 @@
 @property (weak, nonatomic) IBOutlet FXTagView *selectTagView;
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *editViewHeight;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *selectedHeight;
 
 @end
 
@@ -24,7 +25,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.view.backgroundColor = [UIColor lightGrayColor];
+    self.view.backgroundColor = [UIColor lightTextColor];
     
     /**
      *  以下展示的是比较复杂的页面操作. 每种模式可以单独使用.
@@ -36,15 +37,18 @@
     //限制只能输入 中文,英文,数字
     self.editTagView.limitChar  = YES;
     
-    
     //可选择的 TagView
     self.selectTagView.showType = ShowViewTypeSelected;
     
+    //可强制列等分
+    // self.selectTagView.forceColumnNum =YES;
+    
     //可选择的 TagView 添加默认展示 字符串数组
-    [self.selectTagView addTags:@[@"你好",@"英语魔方秀",@"四级英语",@"大宝天天见"]];
+    [self.selectTagView addTags:@[@"你好",@"好好学习",@"天天向上",@"大宝天天见",@"好",@"中国",@"你好"]];
     
     //添加代理
     self.editTagView.tagDelegate =self;
+    
     self.selectTagView.tagDelegate = self;
 
 }
@@ -53,6 +57,7 @@
 
 - (void)tagDidSelectText:(NSString *)selectText tagView:(FXTagView *)tagView{
     NSLog(@"%@",selectText);
+    
     [self.editTagView addTag:selectText];
 }
 
@@ -64,10 +69,15 @@
 }
 
 - (void)heightDidChangedTagView:(FXTagView *)tagView height:(CGFloat)height {
-
-    self.editViewHeight.constant = height;
-    [self.view layoutIfNeeded];
-
+    if (self.editTagView == tagView) {
+        self.editViewHeight.constant = height;
+        [self.view layoutIfNeeded];
+    }else if (self.selectTagView == tagView) {
+    
+        self.selectedHeight.constant = height;
+        [self.view layoutIfNeeded];
+    }
+    
 }
 
 

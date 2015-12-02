@@ -55,11 +55,12 @@ CGFloat   const rowSpace          = 8;  //行间距
 CGFloat   const rowHeight         = 30; //行高
 CGFloat   const inputViewWidth    = 100;//输入框宽度
 CGFloat   const tagMinWidth       = 60; //标签最小宽度
-NSInteger const limitTagCount     = 15; //标签数量限制
+NSInteger const limitTagCount     = 20; //标签数量限制
 NSInteger const limitTagWordCount = 15; //单标签文本字数限制
 
 
 @interface FXTagView()<UITextFieldDelegate,keyInputTextFieldDelegate>
+
 
 /**缓存TagsButton*/
 @property (nonatomic,strong) NSArray *tagButtonPool;
@@ -177,7 +178,8 @@ NSInteger const limitTagWordCount = 15; //单标签文本字数限制
             [_tagDeleteButton setBackgroundColor:_tagBackGroundColor];
             _tagDeleteButton.selected=NO;
             _tagDeleteButton=sender;
-            [menu setTargetRect:sender.frame inView:self];
+            //
+            [menu setTargetRect:sender.frame inView:_containerScrollerView];
             [menu setMenuVisible:YES animated:YES];
         }
     }else if(self.showType == ShowViewTypeSelected) {
@@ -366,13 +368,10 @@ NSInteger const limitTagWordCount = 15; //单标签文本字数限制
 }
 
 - (void)layoutTagViews {
-
-    if(_showType == ShowViewTypeEdit &&!_inputTextField) {
-        [self inputTextField];
-    }
+    
     
     //子控件从视图移除
-    for (UIView *view in self.subviews) {
+    for (UIView *view in self.containerScrollerView.subviews) {
         if ([view isKindOfClass:[UIButton class]]) {
             
             [view removeFromSuperview];
@@ -391,13 +390,18 @@ NSInteger const limitTagWordCount = 15; //单标签文本字数限制
         if(btnWidth < tagMinWidth) {
             btnWidth = tagMinWidth;
         }
+        //特殊需求,强制开启 列等分
+        if (_forceColumnNum) {
+            btnWidth = (self.frame.size.width - 5*columnSpace)/4;
+        }
+        
         if([self ifNeedAddRowCurrentX:moveX width:btnWidth]){
             moveX = columnSpace;
             moveY += (rowHeight+rowSpace);
         }
         tagBtn.frame = CGRectMake(moveX, moveY, btnWidth, rowHeight);
         moveX += btnWidth + columnSpace;
-        [self addSubview:tagBtn];
+        [self.containerScrollerView addSubview:tagBtn];
     }
     
     //更新 输入框 Frame
@@ -410,16 +414,36 @@ NSInteger const limitTagWordCount = 15; //单标签文本字数限制
         self.inputTextField.frame = CGRectMake(moveX, moveY, inputViewWidth, rowHeight);
     }
     
-    //更新容器Frame
     CGRect tempFrame = self.frame;
-    tempFrame.size.height = moveY + rowHeight + columnSpace;
-    self.frame = tempFrame;
-
+    //更新主Frame 和滚动视图
+    if (moveY <= (4 *rowHeight+4*rowSpace)) {
+        
+        if (self.containerScrollerView.contentSize.height >moveY) {
+            CGSize tempSize = self.containerScrollerView.contentSize;
+            tempSize.height = moveY;
+            self.containerScrollerView.contentSize = tempSize;
+        }
+        tempFrame.size.height = moveY + rowHeight + columnSpace;
+        self.frame = tempFrame;
+        self.containerScrollerView.frame = self.bounds;
+    }else {
+        tempFrame.size.height = 4 *rowHeight+5*rowSpace;
+        self.frame = tempFrame;
+        self.containerScrollerView.frame = self.bounds;
+        self.containerScrollerView.contentSize = CGSizeMake(tempFrame.size.width, moveY + rowHeight + 2*columnSpace);
+        
+        [self.containerScrollerView setContentOffset:CGPointMake(0, _containerScrollerView.contentSize.height - _containerScrollerView.frame.size.height-rowSpace) animated:YES];
+    }
 }
 
 
 - (void)layoutSubviews {
 
+    //初始化滚动容器
+    if (_containerScrollerView == nil) {
+        [self containerScrollerView];
+    }
+    
     if(_showType == ShowViewTypeEdit &&!_inputTextField) {
         [self inputTextField];
     }
@@ -440,6 +464,20 @@ NSInteger const limitTagWordCount = 15; //单标签文本字数限制
     return tagBtn;
 }
 
+- (UIScrollView *)containerScrollerView {
+    if (_containerScrollerView ==nil) {
+        UIScrollView* container = [[UIScrollView alloc] initWithFrame:self.bounds];
+        container.contentSize=CGSizeMake(self.frame.size.width, rowHeight);
+        container.autoresizingMask=UIViewAutoresizingFlexibleHeight|UIViewAutoresizingFlexibleWidth;
+        container.indicatorStyle=UIScrollViewIndicatorStyleDefault;
+        container.showsVerticalScrollIndicator = YES;
+        container.showsHorizontalScrollIndicator = NO;
+        [self addSubview:container];
+        _containerScrollerView = container;
+    }
+    return _containerScrollerView;
+}
+
 
 - (FXTagTextField *)inputTextField {
 
@@ -455,7 +493,7 @@ NSInteger const limitTagWordCount = 15; //单标签文本字数限制
         inputField.placeholder=@"输入标签";
         inputField.returnKeyType = UIReturnKeyDone;
         _inputTextField = inputField;
-        [self addSubview:_inputTextField];
+        [self.containerScrollerView addSubview:_inputTextField];
         
     }
     return _inputTextField;

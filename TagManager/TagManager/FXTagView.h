@@ -106,6 +106,10 @@ typedef NS_ENUM(NSInteger, ShowViewType) {
 /**限时输入字符*/
 @property (nonatomic,assign) BOOL limitChar;
 
+/**强制4列等宽*/
+@property (nonatomic,assign) BOOL forceColumnNum;
+
+@property (nonatomic,strong) UIScrollView *containerScrollerView;
 
 /**
  *  添加一个Tag
@@ -135,4 +139,14 @@ typedef NS_ENUM(NSInteger, ShowViewType) {
  *  @param tagString 待改变状态控件的文本
  */
 - (void)changeTagStateSpecialTag:(NSString *)tagString;
+
+
+/**
+ *  搜索指定文本所在 索引
+ *
+ *  @param tagString 搜索字符串
+ *
+ *  @return -1: 未找到 0-N: 寻找到
+ */
+- (NSInteger)findTagIndexByTagStr:(NSString *)tagString;
 @end
