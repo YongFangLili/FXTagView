@@ -5,21 +5,6 @@
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9051"/>
     </dependencies>
     <scenes>
-        <!--Navigation Controller-->
-        <scene sceneID="Owf-lr-cNx">
-            <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="7O8-dr-XTh" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <navigationController id="d9D-Rx-3LT" sceneMemberID="viewController">
-                    <simulatedScreenMetrics key="simulatedDestinationMetrics"/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="bdB-GZ-JZ1">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                        <animations/>
-                    </navigationBar>
-                </navigationController>
-            </objects>
-            <point key="canvasLocation" x="-1120" y="209"/>
-        </scene>
         <!--View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
@@ -33,7 +18,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9a1-9m-zaN" userLabel="editTagView" customClass="FXTagView">
-                                <rect key="frame" x="0.0" y="64" width="375" height="44"/>
+                                <rect key="frame" x="0.0" y="20" width="375" height="44"/>
                                 <animations/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
@@ -41,7 +26,7 @@
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rMy-N5-Wop" userLabel="selectedTagView" customClass="FXTagView">
-                                <rect key="frame" x="0.0" y="128" width="375" height="200"/>
+                                <rect key="frame" x="0.0" y="84" width="375" height="200"/>
                                 <animations/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
@@ -71,7 +56,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-484.5" y="395.5"/>
+            <point key="canvasLocation" x="-684.5" y="408.5"/>
         </scene>
     </scenes>
 </document>

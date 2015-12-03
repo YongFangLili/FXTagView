@@ -38,7 +38,7 @@
     self.editTagView.limitChar  = YES;
     
     //可选择的 TagView
-    self.selectTagView.showType = ShowViewTypeSelected;
+    self.selectTagView.showType = ShowViewTypeMultiSelect;
     
     //可强制列等分
     // self.selectTagView.forceColumnNum =YES;

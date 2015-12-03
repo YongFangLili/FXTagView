@@ -11,6 +11,8 @@
 
 #define UIColorFromRGB(rgbValue) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 
+#define k1PX (1.0 / [UIScreen mainScreen].scale)
+
 @class FXTagTextField;
 @class FXTagView;
 
@@ -67,9 +69,13 @@ typedef NS_ENUM(NSInteger, ShowViewType) {
      */
     ShowViewTypeEdit,
     /**
-     *  展示 + 选择
+     *  展示 + 多选择
      */
-    ShowViewTypeSelected
+    ShowViewTypeMultiSelect,
+    /**
+     *  展示 + 单选
+     */
+    ShowViewTypeSingeleSelect
 };
 
 
@@ -86,22 +92,20 @@ typedef NS_ENUM(NSInteger, ShowViewType) {
 @property (nonatomic,strong) FXTagTextField *inputTextField;
 
 /**代理*/
-@property (nonatomic,weak)   id<FXTagViewDelegate>tagDelegate;
+@property (nonatomic, weak)  id<FXTagViewDelegate>tagDelegate;
 
-/**标签边框颜色*/
-@property (nonatomic,strong) UIColor *tagBorderColor;
 
 /**标签背景颜色*/
-@property (nonatomic,strong) UIColor *tagBackGroundColor;
+@property (nonatomic,strong) UIColor *tagBackgroundColor;
 
-/**标签字体颜色*/
-@property (nonatomic,strong) UIColor *tagFontColor;
-
-/**标签字体大小*/
-@property (nonatomic,strong) UIFont  *tagFont;
+/**标签正常颜色*/
+@property (nonatomic,strong) UIColor *tagNormalColor;
 
 /**标签选择颜色*/
 @property (nonatomic,strong) UIColor *tagSeletedColor;
+
+/**标签字体大小*/
+@property (nonatomic,strong) UIFont  *tagFont;
 
 /**限时输入字符*/
 @property (nonatomic,assign) BOOL limitChar;

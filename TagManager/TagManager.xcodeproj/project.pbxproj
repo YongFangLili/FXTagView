@@ -14,6 +14,7 @@
 		B20A74F01C08376B00E3824D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B20A74EF1C08376B00E3824D /* Assets.xcassets */; };
 		B20A74F31C08376B00E3824D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B20A74F11C08376B00E3824D /* LaunchScreen.storyboard */; };
 		B20A74FC1C08379F00E3824D /* FXTagView.m in Sources */ = {isa = PBXBuildFile; fileRef = B20A74FB1C08379F00E3824D /* FXTagView.m */; };
+		B232E8131C100C5B0085D5FF /* FXTagTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = B232E8121C100C5B0085D5FF /* FXTagTextField.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,6 +30,8 @@
 		B20A74F41C08376B00E3824D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B20A74FA1C08379F00E3824D /* FXTagView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FXTagView.h; sourceTree = "<group>"; };
 		B20A74FB1C08379F00E3824D /* FXTagView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FXTagView.m; sourceTree = "<group>"; };
+		B232E8111C100C5B0085D5FF /* FXTagTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FXTagTextField.h; sourceTree = "<group>"; };
+		B232E8121C100C5B0085D5FF /* FXTagTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FXTagTextField.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -88,6 +91,8 @@
 			children = (
 				B20A74FA1C08379F00E3824D /* FXTagView.h */,
 				B20A74FB1C08379F00E3824D /* FXTagView.m */,
+				B232E8111C100C5B0085D5FF /* FXTagTextField.h */,
+				B232E8121C100C5B0085D5FF /* FXTagTextField.m */,
 			);
 			name = FXTagsView;
 			sourceTree = "<group>";
@@ -164,6 +169,7 @@
 			files = (
 				B20A74EB1C08376B00E3824D /* ViewController.m in Sources */,
 				B20A74E81C08376B00E3824D /* AppDelegate.m in Sources */,
+				B232E8131C100C5B0085D5FF /* FXTagTextField.m in Sources */,
 				B20A74E51C08376B00E3824D /* main.m in Sources */,
 				B20A74FC1C08379F00E3824D /* FXTagView.m in Sources */,
 			);
