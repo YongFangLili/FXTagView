@@ -16,7 +16,7 @@ CGFloat     const rowHeight         = 30;  //行高
 CGFloat     const inputViewWidth    = 100; //输入框宽度
 CGFloat     const tagMinWidth       = 60;  //标签最小宽度
 NSInteger   const limitTagCount     = 20;  //标签数量限制
-NSInteger   const limitTagWordCount = 15;  //单标签文本字数限制
+NSInteger   const limitTagWordCount = 50;  //单标签文本字数限制
 NSUInteger  const FXInitialTag      = 1000;// Tag起始值
 
 @interface FXTagView ()<UITextFieldDelegate, keyInputTextFieldDelegate>
@@ -399,7 +399,7 @@ NSUInteger  const FXInitialTag      = 1000;// Tag起始值
     if (self.showType == ShowViewTypeEdit) {
         BOOL addRowForTextField =
         [self ifNeedAddRowCurrentX:moveX
-                             width:self.inputTextField.frame.size.width];
+                             width:20.0f];
         if (addRowForTextField) {
             moveX = columnSpace;
             moveY += (rowHeight + rowSpace);
@@ -408,6 +408,13 @@ NSUInteger  const FXInitialTag      = 1000;// Tag起始值
         CGRectMake(moveX, moveY, inputViewWidth, rowHeight);
     }
     
+    [self updateContainerStartAtX:moveX Y:moveY];
+    
+}
+
+
+- (void)updateContainerStartAtX:(CGFloat)moveX  Y:(CGFloat)moveY {
+
     CGRect tempFrame = self.frame;
     //更新主Frame 和滚动视图
     if (moveY <= (_limitRowNum *(rowHeight +rowSpace))) {
@@ -434,6 +441,7 @@ NSUInteger  const FXInitialTag      = 1000;// Tag起始值
          animated:YES];
     }
 }
+
 
 - (void)layoutSubviews {
     //初始化滚动容器
@@ -475,9 +483,27 @@ NSUInteger  const FXInitialTag      = 1000;// Tag起始值
         container.showsVerticalScrollIndicator = YES;
         container.showsHorizontalScrollIndicator = NO;
         [self addSubview:container];
+        
+        if (self.showType == ShowViewTypeEdit) {
+            UITapGestureRecognizer* tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector
+                                                            (handlerTapGesture:)];
+            tapGestureRecognizer.numberOfTapsRequired=1;
+            [self addGestureRecognizer:tapGestureRecognizer];
+        }
+        
         _containerScrollerView = container;
     }
     return _containerScrollerView;
+}
+
+
+- (void)handlerTapGesture:(UIPanGestureRecognizer *)recognizer {
+    [[UIMenuController sharedMenuController] setMenuVisible:NO animated:YES];
+    if (_showType == ShowViewTypeEdit) {
+        
+        [self.inputTextField becomeFirstResponder];
+        
+    }
 }
 
 - (FXTagTextField *)inputTextField {
@@ -533,9 +559,14 @@ NSUInteger  const FXInitialTag      = 1000;// Tag起始值
 }
 
 - (BOOL)textField:(UITextField *)textField
-shouldChangeCharactersInRange:(NSRange)range
-replacementString:(NSString *)string {
-    return YES;
+    shouldChangeCharactersInRange:(NSRange)range
+                replacementString:(NSString *)string {
+    
+    
+  
+    
+    
+  return YES;
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
@@ -569,11 +600,37 @@ replacementString:(NSString *)string {
 
 - (void)textFieldDidChange:(FXTagTextField *)textField {
     NSLog(@"textFieldDidChange");
-    if (!self.backDeleteButton || !self.tagsArray.count) return;
+    if (self.backDeleteButton &&self.tagsArray.count){
+        self.backDeleteButton.selected = NO;
+        [self configColorTag:self.backDeleteButton ShowType:ShowViewTypeEdit];
+        self.backDeleteButton = nil;
+    }
     
-    self.backDeleteButton.selected = NO;
-    [self configColorTag:self.backDeleteButton ShowType:ShowViewTypeEdit];
-    self.backDeleteButton = nil;
+    //新输入框 宽度 (最小值)
+    CGFloat newWidth =  MAX( 70, [textField.text sizeWithAttributes:@{NSFontAttributeName:_tagFont}].width + 30.0f);
+    
+    CGRect inputRect = _inputTextField.frame;
+    
+    BOOL addRowForTextField = (inputRect.origin.x +newWidth) >= self.frame.size.width;
+
+    if (addRowForTextField) {
+        self.inputTextField.frame =
+        CGRectMake(columnSpace, (inputRect.origin.y +rowHeight + rowSpace ), newWidth, rowHeight);
+        
+        [self updateContainerStartAtX:columnSpace Y:(inputRect.origin.y +2*rowHeight + rowSpace )];
+        
+        if ([self.tagDelegate
+             respondsToSelector:@selector(heightDidChangedTagView:height:)]) {
+            [self.tagDelegate heightDidChangedTagView:self
+                                               height:self.frame.size.height];
+        }
+    }else {
+       self.inputTextField.frame = CGRectMake(inputRect.origin.x,inputRect.origin.y , newWidth, rowHeight);
+    }
+    
+    
+   
+    
 }
 
 #pragma mark - Custom Menu
