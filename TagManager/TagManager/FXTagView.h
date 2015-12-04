@@ -107,11 +107,14 @@ typedef NS_ENUM(NSInteger, ShowViewType) {
 /**标签字体大小*/
 @property (nonatomic,strong) UIFont  *tagFont;
 
-/**限时输入字符*/
+/**限时输入字符类型*/
 @property (nonatomic,assign) BOOL limitChar;
 
-/**强制4列等宽*/
-@property (nonatomic,assign) BOOL forceColumnNum;
+/**限制 多少行 超出部分可滚动显示*/
+@property (nonatomic,assign) NSInteger limitRowNum;
+
+/**限制 多少列*/
+@property (nonatomic,assign) NSInteger limitColumnNum;
 
 @property (nonatomic,strong) UIScrollView *containerScrollerView;
 

@@ -41,15 +41,17 @@
     self.selectTagView.showType = ShowViewTypeMultiSelect;
     
     //可强制列等分
-    // self.selectTagView.forceColumnNum =YES;
-    
-    //可选择的 TagView 添加默认展示 字符串数组
-    [self.selectTagView addTags:@[@"你好",@"好好学习",@"天天向上",@"大宝天天见",@"好",@"中国",@"你好"]];
+     self.selectTagView.limitColumnNum =4;
     
     //添加代理
     self.editTagView.tagDelegate =self;
     
     self.selectTagView.tagDelegate = self;
+    
+    //可选择的 TagView 添加默认展示 字符串数组
+    [self.selectTagView addTags:@[@"你好",@"好好学习",@"天天向上",@"大宝天天见",@"好",@"中国",@"你好"]];
+    
+   
 
 }
 
